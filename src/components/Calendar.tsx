@@ -13,72 +13,90 @@ import {
   MapPinIcon,
 } from "@heroicons/react/20/solid";
 import { twMerge } from "tailwind-merge";
+import {
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  format,
+  isThisMonth,
+  startOfWeek,
+  endOfWeek,
+} from "date-fns";
+import React, { ReactElement, useState } from "react";
 
-const meetings = [
-  {
-    id: 1,
-    date: "January 10th, 2022",
-    time: "5:00 PM",
-    datetime: "2022-01-10T17:00",
-    name: "Leslie Alexander",
-    imageUrl:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    location: "Starbucks",
-  },
-  // More meetings...
-];
-const days = [
-  { date: "2021-12-27" },
-  { date: "2021-12-28" },
-  { date: "2021-12-29" },
-  { date: "2021-12-30" },
-  { date: "2021-12-31" },
-  { date: "2022-01-01", isCurrentMonth: true },
-  { date: "2022-01-02", isCurrentMonth: true },
-  { date: "2022-01-03", isCurrentMonth: true },
-  { date: "2022-01-04", isCurrentMonth: true },
-  { date: "2022-01-05", isCurrentMonth: true },
-  { date: "2022-01-06", isCurrentMonth: true },
-  { date: "2022-01-07", isCurrentMonth: true },
-  { date: "2022-01-08", isCurrentMonth: true },
-  { date: "2022-01-09", isCurrentMonth: true },
-  { date: "2022-01-10", isCurrentMonth: true },
-  { date: "2022-01-11", isCurrentMonth: true },
-  { date: "2022-01-12", isCurrentMonth: true, isToday: true },
-  { date: "2022-01-13", isCurrentMonth: true },
-  { date: "2022-01-14", isCurrentMonth: true },
-  { date: "2022-01-15", isCurrentMonth: true },
-  { date: "2022-01-16", isCurrentMonth: true },
-  { date: "2022-01-17", isCurrentMonth: true },
-  { date: "2022-01-18", isCurrentMonth: true },
-  { date: "2022-01-19", isCurrentMonth: true },
-  { date: "2022-01-20", isCurrentMonth: true },
-  { date: "2022-01-21", isCurrentMonth: true },
-  { date: "2022-01-22", isCurrentMonth: true, isSelected: true },
-  { date: "2022-01-23", isCurrentMonth: true },
-  { date: "2022-01-24", isCurrentMonth: true },
-  { date: "2022-01-25", isCurrentMonth: true },
-  { date: "2022-01-26", isCurrentMonth: true },
-  { date: "2022-01-27", isCurrentMonth: true },
-  { date: "2022-01-28", isCurrentMonth: true },
-  { date: "2022-01-29", isCurrentMonth: true },
-  { date: "2022-01-30", isCurrentMonth: true },
-  { date: "2022-01-31", isCurrentMonth: true },
-  { date: "2022-02-01" },
-  { date: "2022-02-02" },
-  { date: "2022-02-03" },
-  { date: "2022-02-04" },
-  { date: "2022-02-05" },
-  { date: "2022-02-06" },
-];
+type Meeting = {
+  id: number;
+  date: string;
+  time: string;
+  datetime: string;
+  name: string;
+  imageUrl: string;
+  location: string;
+};
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+type CalendarProps = {
+  meetings?: Meeting[];
+  handleAddEvent: () => void;
+};
 
-export default function Calendar() {
+// const meetings = [
+//   {
+//     id: 1,
+//     date: "January 10th, 2022",
+//     time: "5:00 PM",
+//     datetime: "2022-01-10T17:00",
+//     name: "Leslie Alexander",
+//     imageUrl:
+//       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+//     location: "Starbucks",
+//   },
+//   {
+//     id: 2,
+//     date: "January 10th, 2022",
+//     time: "5:00 PM",
+//     datetime: "2022-01-10T17:00",
+//     name: "Leslie Alexander",
+//     imageUrl:
+//       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+//     location: "Starbucks",
+//   },
+//   {
+//     id: 3,
+//     date: "January 10th, 2022",
+//     time: "5:00 PM",
+//     datetime: "2022-01-10T17:00",
+//     name: "Leslie Alexander",
+//     imageUrl:
+//       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+//     location: "Starbucks",
+//   },
+// ];
+
+const start = startOfWeek(startOfMonth(new Date()));
+const end = endOfWeek(endOfMonth(new Date()));
+
+const dates = eachDayOfInterval({
+  start,
+  end,
+}).map((date) => ({
+  date: format(date, "yyyy-MM-dd"),
+  isCurrentMonth: isThisMonth(date),
+  isToday: format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd"),
+}));
+
+const weekdays = ["M", "T", "W", "T", "F", "S", "S"];
+
+const Calendar: React.FC<CalendarProps> = ({
+  handleAddEvent,
+  meetings = [],
+}): ReactElement => {
+  const [selectedDay, setSelectedDay] = useState(-1);
+
+  const handleSelectedDay = (idx: number) => {
+    setSelectedDay(idx);
+  };
   return (
-    <div className="p-36">
+    <div className="m-28 px-20 py-6 border-neutral-200 border rounded-lg">
       <h2 className="text-base font-semibold leading-6 text-gray-900">
         Upcoming meetings
       </h2>
@@ -102,48 +120,45 @@ export default function Calendar() {
             </button>
           </div>
           <div className="mt-6 grid grid-cols-7 text-xs leading-6 text-gray-500">
-            <div>M</div>
-            <div>T</div>
-            <div>W</div>
-            <div>T</div>
-            <div>F</div>
-            <div>S</div>
-            <div>S</div>
+            {weekdays.map((day, index) => (
+              <div key={index}>{day}</div>
+            ))}
           </div>
           <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200">
-            {days.map((day, dayIdx) => (
+            {dates.map((date, dateIdx) => (
               <button
-                key={day.date}
+                key={date.date}
                 type="button"
-                className={classNames(
+                className={twMerge(
                   "py-1.5 hover:bg-gray-100 focus:z-10",
-                  day.isCurrentMonth ? "bg-white" : "bg-gray-50",
-                  (day.isSelected || day.isToday) && "font-semibold",
-                  day.isSelected && "text-white",
-                  !day.isSelected &&
-                    day.isCurrentMonth &&
-                    !day.isToday &&
+                  date.isCurrentMonth ? "bg-white" : "bg-gray-50",
+                  (selectedDay === dateIdx || date.isToday) && "font-semibold",
+                  selectedDay === dateIdx && "text-white",
+                  selectedDay !== dateIdx &&
+                    date.isCurrentMonth &&
+                    !date.isToday &&
                     "text-gray-900",
-                  !day.isSelected &&
-                    !day.isCurrentMonth &&
-                    !day.isToday &&
+                  selectedDay !== dateIdx &&
+                    !date.isCurrentMonth &&
+                    !date.isToday &&
                     "text-gray-400",
-                  day.isToday && !day.isSelected && "text-indigo-600",
-                  dayIdx === 0 && "rounded-tl-lg",
-                  dayIdx === 6 && "rounded-tr-lg",
-                  dayIdx === days.length - 7 && "rounded-bl-lg",
-                  dayIdx === days.length - 1 && "rounded-br-lg"
+                  date.isToday && selectedDay !== dateIdx && "text-indigo-600",
+                  dateIdx === 0 && "rounded-tl-lg",
+                  dateIdx === 6 && "rounded-tr-lg",
+                  dateIdx === dates.length - 7 && "rounded-bl-lg",
+                  dateIdx === dates.length - 1 && "rounded-br-lg"
                 )}
+                onClick={() => handleSelectedDay(dateIdx)}
               >
                 <time
-                  dateTime={day.date}
-                  className={classNames(
+                  dateTime={date.date}
+                  className={twMerge(
                     "mx-auto flex h-7 w-7 items-center justify-center rounded-full",
-                    day.isSelected && day.isToday && "bg-indigo-600",
-                    day.isSelected && !day.isToday && "bg-gray-900"
+                    selectedDay === dateIdx && date.isToday && "bg-indigo-600",
+                    selectedDay === dateIdx && !date.isToday && "bg-gray-900"
                   )}
                 >
-                  {day.date.split("-").pop()?.replace(/^0/, "")}
+                  {date.date.split("-").pop()?.replace(/^0/, "")}
                 </time>
               </button>
             ))}
@@ -151,6 +166,7 @@ export default function Calendar() {
           <button
             type="button"
             className="mt-8 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            onClick={handleAddEvent}
           >
             Add event
           </button>
@@ -225,7 +241,7 @@ export default function Calendar() {
                         {({ focus }) => (
                           <a
                             href="#"
-                            className={classNames(
+                            className={twMerge(
                               focus
                                 ? "bg-gray-100 text-gray-900"
                                 : "text-gray-700",
@@ -240,7 +256,7 @@ export default function Calendar() {
                         {({ focus }) => (
                           <a
                             href="#"
-                            className={classNames(
+                            className={twMerge(
                               focus
                                 ? "bg-gray-100 text-gray-900"
                                 : "text-gray-700",
@@ -261,4 +277,6 @@ export default function Calendar() {
       </div>
     </div>
   );
-}
+};
+
+export default Calendar;
