@@ -16,22 +16,43 @@ type CalendarProps = {
   }[];
 };
 
-const weekdays = ["M", "T", "W", "T", "F", "S", "S"];
+const locale = navigator.language;
 
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "Jun",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
+const weekdays =
+  locale === "en-US"
+    ? ["M", "T", "W", "T", "F", "S", "S"]
+    : ["P", "U", "S", "C", "P", "S", "N"];
+
+const months =
+  locale === "en-US"
+    ? [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ]
+    : [
+        "Januar",
+        "Februar",
+        "Mart",
+        "April",
+        "Maj",
+        "Jun",
+        "Jul",
+        "Avgust",
+        "Septembar",
+        "Oktobar",
+        "Novembar",
+        "Decembar",
+      ];
 
 const Calendar: React.FC<CalendarProps> = ({
   selectedDay,
