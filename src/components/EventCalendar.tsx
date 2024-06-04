@@ -113,14 +113,15 @@ const EventCalendar: React.FC = (): ReactElement => {
   };
 
   const handleAddEvent = (selectedDay: number) => {
+    const time = localeObject.code === "sr" ? "17:00" : "5:00 PM";
     setMeetings((prev) => [
       ...prev,
       {
         id: prev.length + 1,
-        date: format(dates[selectedDay].date, "MMMM do, yyyy", {
+        date: format(dates[selectedDay].date, "do MMMM yyyy.", {
           locale: localeObject,
         }),
-        time: "5:00 PM",
+        time: time,
         datetime: `${dates[selectedDay].date}T17:00`,
         name: "Leslie Alexander",
         imageUrl:
