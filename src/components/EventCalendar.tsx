@@ -23,6 +23,7 @@ import {
 } from "date-fns";
 import React, { ReactElement, useState } from "react";
 import Calendar from "./Calendar";
+import { enUS, sr } from "date-fns/locale";
 
 type Meeting = {
   id: number;
@@ -56,6 +57,20 @@ const mockMeetings: Meeting[] = [
     location: "Starbucks",
   },
 ];
+
+const getLocale = (locale: string) => {
+  switch (locale) {
+    case "en-US":
+      return enUS;
+    case "sr":
+      return sr;
+    default:
+      return enUS;
+  }
+};
+
+const locale = navigator.language;
+const localeObject = getLocale(locale);
 
 const EventCalendar: React.FC = (): ReactElement => {
   const [meetings, setMeetings] = useState(mockMeetings);
@@ -102,7 +117,9 @@ const EventCalendar: React.FC = (): ReactElement => {
       ...prev,
       {
         id: prev.length + 1,
-        date: format(dates[selectedDay].date, "MMMM do, yyyy"),
+        date: format(dates[selectedDay].date, "MMMM do, yyyy", {
+          locale: localeObject,
+        }),
         time: "5:00 PM",
         datetime: `${dates[selectedDay].date}T17:00`,
         name: "Leslie Alexander",

@@ -21,7 +21,7 @@ const locale = navigator.language;
 const weekdays =
   locale === "en-US"
     ? ["M", "T", "W", "T", "F", "S", "S"]
-    : ["P", "U", "S", "C", "P", "S", "N"];
+    : ["П", "У", "С", "Ч", "П", "С", "Н"];
 
 const months =
   locale === "en-US"
@@ -40,18 +40,18 @@ const months =
         "December",
       ]
     : [
-        "Januar",
-        "Februar",
-        "Mart",
-        "April",
-        "Maj",
-        "Jun",
-        "Jul",
-        "Avgust",
-        "Septembar",
-        "Oktobar",
-        "Novembar",
-        "Decembar",
+        "Јануар",
+        "Фебруар",
+        "Март",
+        "Април",
+        "Мај",
+        "Јун",
+        "Јул",
+        "Август",
+        "Септембар",
+        "Октобар",
+        "Новембар",
+        "Децембар",
       ];
 
 const Calendar: React.FC<CalendarProps> = ({
@@ -72,7 +72,6 @@ const Calendar: React.FC<CalendarProps> = ({
           className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
           onClick={handlePrevMonth}
         >
-          <span className="sr-only">Previous month</span>
           <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
         </button>
         <div className="flex-auto text-sm font-semibold">{month}</div>
@@ -81,7 +80,6 @@ const Calendar: React.FC<CalendarProps> = ({
           className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
           onClick={handleNextMonth}
         >
-          <span className="sr-only">Next month</span>
           <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
