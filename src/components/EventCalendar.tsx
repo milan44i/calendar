@@ -25,7 +25,7 @@ import React, { ReactElement, useState } from "react";
 import Calendar from "./Calendar";
 import { enUS, sr } from "date-fns/locale";
 
-type Meeting = {
+export type Meeting = {
   id: number;
   date: string;
   time: string;
@@ -145,6 +145,7 @@ const EventCalendar: React.FC = (): ReactElement => {
             handlePrevMonth={handlePrevMonth}
             handleNextMonth={handleNextMonth}
             dates={dates}
+            meetings={meetings}
           />
           <button
             type="button"
