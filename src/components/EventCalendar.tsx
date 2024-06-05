@@ -22,12 +22,10 @@ import {
 } from "date-fns";
 import React, { ReactElement, useState } from "react";
 import Calendar from "./Calendar";
-import { getLocale } from "./functions";
+import { makeEvent } from "./functions";
 import clsx from "clsx";
 import { mockMeetings } from "./data";
-
-const locale = navigator.language;
-const localeObject = getLocale(locale);
+import { Meeting } from "./types";
 
 const EventCalendar: React.FC = (): ReactElement => {
   const [meetings, setMeetings] = useState(mockMeetings);
@@ -68,23 +66,8 @@ const EventCalendar: React.FC = (): ReactElement => {
     setMonthDeviation((prev) => prev + 1);
   };
 
-  const handleAddEvent = (selectedDay: number) => {
-    const time = localeObject.code === "sr" ? "17:00" : "5:00 PM";
-    setMeetings((prev) => [
-      ...prev,
-      {
-        id: prev.length + 1,
-        date: format(dates[selectedDay], "do MMMM yyyy.", {
-          locale: localeObject,
-        }),
-        time: time,
-        datetime: dates[selectedDay],
-        name: "Leslie Alexander",
-        imageUrl:
-          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-        location: "Starbucks",
-      },
-    ]);
+  const handleAddEvent = (meeting: Meeting) => {
+    setMeetings((prev) => [...prev, { ...meeting, id: prev.length + 1 }]);
   };
 
   return (
@@ -106,7 +89,7 @@ const EventCalendar: React.FC = (): ReactElement => {
           <button
             type="button"
             className="mt-8 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            onClick={() => handleAddEvent(selectedDay)}
+            onClick={() => handleAddEvent(makeEvent(selectedDay))}
           >
             Add event
           </button>
