@@ -16,7 +16,6 @@ import {
   endOfMonth,
   eachDayOfInterval,
   format,
-  isThisMonth,
   startOfWeek,
   endOfWeek,
   isSameDay,
@@ -30,7 +29,7 @@ export type Meeting = {
   id: number;
   date: string;
   time: string;
-  datetime: string;
+  datetime: string | Date; // will be Date only
   name: string;
   imageUrl: string;
   location: string;
@@ -66,6 +65,33 @@ const EventCalendar: React.FC = (): ReactElement => {
   const [meetings, setMeetings] = useState(mockMeetings);
   const [monthDeviation, setMonthDeviation] = useState(0);
 
+  const currentMonth = getMonth(new Date());
+  const selectedMonth = (currentMonth + monthDeviation + 12) % 12; // 0-11
+
+  const start = startOfWeek(startOfMonth(new Date(2024, selectedMonth, 1)), {
+    weekStartsOn: 1,
+  });
+  const end = endOfWeek(endOfMonth(new Date(2024, selectedMonth, 1)), {
+    weekStartsOn: 1,
+  });
+
+  const dates = eachDayOfInterval({
+    start,
+    end,
+  });
+
+  const firstDayIndex = dates.findIndex((date) =>
+    isSameDay(date, startOfMonth(new Date()))
+  );
+
+  const [selectedDay, setSelectedDay] = useState(
+    new Date().getDate() + firstDayIndex - 1
+  );
+
+  const handleSelectedDay = (index: number) => {
+    setSelectedDay(index);
+  };
+
   const handlePrevMonth = () => {
     setMonthDeviation((prev) => prev - 1);
   };
@@ -74,43 +100,17 @@ const EventCalendar: React.FC = (): ReactElement => {
     setMonthDeviation((prev) => prev + 1);
   };
 
-  const currentMonth = getMonth(new Date());
-  const selectedMonth = (currentMonth + monthDeviation + 12) % 12; // 0-11
-
-  const start = startOfWeek(startOfMonth(new Date(2024, selectedMonth, 1)));
-  const end = endOfWeek(endOfMonth(new Date(2024, selectedMonth, 1)));
-
-  const dates = eachDayOfInterval({
-    start,
-    end,
-  }).map((date) => ({
-    date: format(date, "yyyy-MM-dd"),
-    isCurrentMonth: isThisMonth(date),
-    isToday: format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd"),
-  }));
-  const firstDayIndex = dates.findIndex((date) =>
-    isSameDay(new Date(date.date), startOfMonth(new Date()))
-  );
-
-  const [selectedDay, setSelectedDay] = useState(
-    new Date().getDate() + firstDayIndex - 1
-  );
-
-  const handleSelectedDay = (idx: number) => {
-    setSelectedDay(idx);
-  };
-
   const handleAddEvent = (selectedDay: number) => {
     const time = localeObject.code === "sr" ? "17:00" : "5:00 PM";
     setMeetings((prev) => [
       ...prev,
       {
         id: prev.length + 1,
-        date: format(dates[selectedDay].date, "do MMMM yyyy.", {
+        date: format(dates[selectedDay], "do MMMM yyyy.", {
           locale: localeObject,
         }),
         time: time,
-        datetime: `${dates[selectedDay].date}T17:00`,
+        datetime: dates[selectedDay],
         name: "Leslie Alexander",
         imageUrl:
           "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
@@ -169,7 +169,12 @@ const EventCalendar: React.FC = (): ReactElement => {
                         />
                       </dt>
                       <dd>
-                        <time dateTime={meeting.datetime}>
+                        <time
+                          dateTime={format(
+                            meeting.datetime,
+                            "yyyy-MM-dd'T'HH:mm"
+                          )}
+                        >
                           {meeting.date} at {meeting.time}
                         </time>
                       </dd>
