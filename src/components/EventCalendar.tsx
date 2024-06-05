@@ -20,10 +20,11 @@ import {
   startOfWeek,
   endOfWeek,
   isSameDay,
+  getMonth,
 } from "date-fns";
 import React, { ReactElement, useState } from "react";
 import Calendar from "./Calendar";
-import { enUS, sr } from "date-fns/locale";
+import { getLocale } from "./functions";
 
 export type Meeting = {
   id: number;
@@ -58,29 +59,26 @@ const mockMeetings: Meeting[] = [
   },
 ];
 
-const getLocale = (locale: string) => {
-  switch (locale) {
-    case "en-US":
-      return enUS;
-    case "sr":
-      return sr;
-    default:
-      return enUS;
-  }
-};
-
 const locale = navigator.language;
 const localeObject = getLocale(locale);
 
 const EventCalendar: React.FC = (): ReactElement => {
   const [meetings, setMeetings] = useState(mockMeetings);
+  const [monthDeviation, setMonthDeviation] = useState(0);
 
-  const [selectedMonth, setSelectedMonth] = useState(
-    parseInt(format(new Date(), "M"))
-  );
+  const handlePrevMonth = () => {
+    setMonthDeviation((prev) => prev - 1);
+  };
 
-  const start = startOfWeek(startOfMonth(new Date(2024, selectedMonth - 1, 1)));
-  const end = endOfWeek(endOfMonth(new Date(2024, selectedMonth - 1, 1)));
+  const handleNextMonth = () => {
+    setMonthDeviation((prev) => prev + 1);
+  };
+
+  const currentMonth = getMonth(new Date());
+  const selectedMonth = (currentMonth + monthDeviation + 12) % 12; // 0-11
+
+  const start = startOfWeek(startOfMonth(new Date(2024, selectedMonth, 1)));
+  const end = endOfWeek(endOfMonth(new Date(2024, selectedMonth, 1)));
 
   const dates = eachDayOfInterval({
     start,
@@ -100,16 +98,6 @@ const EventCalendar: React.FC = (): ReactElement => {
 
   const handleSelectedDay = (idx: number) => {
     setSelectedDay(idx);
-  };
-
-  const handlePrevMonth = () => {
-    if (selectedMonth === 1) return;
-    setSelectedMonth((prev) => prev - 1);
-  };
-
-  const handleNextMonth = () => {
-    if (selectedMonth === 12) return;
-    setSelectedMonth((prev) => prev + 1);
   };
 
   const handleAddEvent = (selectedDay: number) => {
@@ -141,9 +129,9 @@ const EventCalendar: React.FC = (): ReactElement => {
           <Calendar
             selectedDay={selectedDay}
             handleSelectedDay={handleSelectedDay}
-            selectedMonth={selectedMonth}
             handlePrevMonth={handlePrevMonth}
             handleNextMonth={handleNextMonth}
+            monthDeviation={monthDeviation}
             dates={dates}
             meetings={meetings}
           />

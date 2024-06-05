@@ -3,13 +3,15 @@ import { twMerge } from "tailwind-merge";
 
 import React, { ReactElement } from "react";
 import { Meeting } from "./EventCalendar";
+import { addMonths, format } from "date-fns";
+import { getLocale } from "./functions";
 
 type CalendarProps = {
   selectedDay: number;
   handleSelectedDay: (idx: number) => void;
-  selectedMonth: number;
   handlePrevMonth: () => void;
   handleNextMonth: () => void;
+  monthDeviation: number;
   dates: {
     date: string;
     isCurrentMonth: boolean;
@@ -19,53 +21,25 @@ type CalendarProps = {
 };
 
 const locale = navigator.language;
+const localeObject = getLocale(locale);
 
 const weekdays =
   locale === "en-US"
     ? ["M", "T", "W", "T", "F", "S", "S"]
     : ["P", "U", "S", "Č", "P", "S", "N"];
 
-const months =
-  locale === "en-US"
-    ? [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ]
-    : [
-        "Јануар",
-        "Фебруар",
-        "Март",
-        "Април",
-        "Мај",
-        "Јун",
-        "Јул",
-        "Август",
-        "Септембар",
-        "Октобар",
-        "Новембар",
-        "Децембар",
-      ];
-
 const Calendar: React.FC<CalendarProps> = ({
   selectedDay,
   handleSelectedDay,
-  selectedMonth,
   handlePrevMonth,
   handleNextMonth,
+  monthDeviation,
   dates,
   meetings,
 }): ReactElement => {
-  const month = months[selectedMonth - 1];
+  const month = format(addMonths(new Date(), monthDeviation), "LLLL", {
+    locale: localeObject,
+  });
 
   return (
     <>
@@ -77,7 +51,9 @@ const Calendar: React.FC<CalendarProps> = ({
         >
           <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
         </button>
-        <div className="flex-auto text-sm font-semibold">{month}</div>
+        <div className="flex-auto text-sm font-semibold capitalize">
+          {month}
+        </div>
         <button
           type="button"
           className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
@@ -93,7 +69,6 @@ const Calendar: React.FC<CalendarProps> = ({
       </div>
       <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200">
         {dates.map((date, dateIdx) => {
-          console.log(meetings[0].datetime.slice(0, 10), date.date);
           const hasEvent = meetings.some(
             (meeting) => meeting.datetime.slice(0, 10) === date.date
           );
