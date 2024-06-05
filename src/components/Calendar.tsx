@@ -3,12 +3,12 @@ import clsx from "clsx";
 
 import React, { ReactElement } from "react";
 import { addMonths, format, isToday } from "date-fns";
-import { getLocale, isCurrentMonth } from "./functions";
+import { areDatesEqual, getLocale, isCurrentMonth } from "./functions";
 import { Meeting } from "./types";
 
 type CalendarProps = {
-  selectedDay: number;
-  handleSelectedDay: (index: number) => void;
+  selectedDay: Date;
+  handleSelectedDay: (date: Date) => void;
   handlePrevMonth: () => void;
   handleNextMonth: () => void;
   monthDeviation: number;
@@ -64,7 +64,7 @@ const Calendar: React.FC<CalendarProps> = ({
         ))}
       </div>
       <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200 overflow-hidden">
-        {dates.map((date, dateIndex) => {
+        {dates.map((date) => {
           const formattedDate = format(date, "yyyy-MM-dd");
           const hasEvent = meetings.some(
             (meeting) => meeting.datetime === date
@@ -76,19 +76,22 @@ const Calendar: React.FC<CalendarProps> = ({
               className={clsx(
                 "py-1.5 relative hover:bg-gray-100 focus:z-10 text-gray-400",
                 isCurrentMonth(date) ? "bg-white" : "bg-gray-50",
-                (selectedDay === dateIndex || isToday(date)) && "font-semibold",
+                (areDatesEqual(selectedDay, date) || isToday(date)) &&
+                  "font-semibold",
                 isCurrentMonth(date) && "text-gray-900",
                 isToday(date) && "text-indigo-600",
-                selectedDay === dateIndex && "text-white"
+                areDatesEqual(selectedDay, date) && "text-white"
               )}
-              onClick={() => handleSelectedDay(dateIndex)}
+              onClick={() => handleSelectedDay(date)}
             >
               <time
                 dateTime={formattedDate}
                 className={clsx(
                   "mx-auto flex h-7 w-7 items-center justify-center rounded-full",
-                  selectedDay === dateIndex && "bg-gray-900",
-                  selectedDay === dateIndex && isToday(date) && "bg-indigo-600"
+                  areDatesEqual(selectedDay, date) && "bg-gray-900",
+                  areDatesEqual(selectedDay, date) &&
+                    isToday(date) &&
+                    "bg-indigo-600"
                 )}
               >
                 {formattedDate.split("-").pop()?.replace(/^0/, "")}

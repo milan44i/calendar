@@ -46,16 +46,14 @@ const EventCalendar: React.FC = (): ReactElement => {
     end,
   });
 
-  const firstDayIndex = dates.findIndex((date) =>
-    isSameDay(date, startOfMonth(new Date()))
-  );
+  // const firstDayIndex = dates.findIndex((date) =>
+  //   isSameDay(date, startOfMonth(new Date()))
+  // );
 
-  const [selectedDay, setSelectedDay] = useState(
-    new Date().getDate() + firstDayIndex - 1
-  );
+  const [selectedDay, setSelectedDay] = useState(new Date());
 
-  const handleSelectedDay = (index: number) => {
-    setSelectedDay(index);
+  const handleSelectedDay = (date: Date) => {
+    setSelectedDay(date);
   };
 
   const handlePrevMonth = () => {
