@@ -63,7 +63,7 @@ const Calendar: React.FC<CalendarProps> = ({
           <div key={index}>{day}</div>
         ))}
       </div>
-      <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200">
+      <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200 overflow-hidden">
         {dates.map((date, dateIndex) => {
           const formattedDate = format(date, "yyyy-MM-dd");
           const hasEvent = meetings.some(
@@ -74,23 +74,12 @@ const Calendar: React.FC<CalendarProps> = ({
               key={date.toISOString()}
               type="button"
               className={clsx(
-                "py-1.5 relative hover:bg-gray-100 focus:z-10",
+                "py-1.5 relative hover:bg-gray-100 focus:z-10 text-gray-400",
                 isCurrentMonth(date) ? "bg-white" : "bg-gray-50",
                 (selectedDay === dateIndex || isToday(date)) && "font-semibold",
-                selectedDay === dateIndex && "text-white",
-                selectedDay !== dateIndex &&
-                  isCurrentMonth(date) &&
-                  !isToday(date) &&
-                  "text-gray-900",
-                selectedDay !== dateIndex &&
-                  !isCurrentMonth(date) &&
-                  !isToday(date) &&
-                  "text-gray-400",
-                isToday(date) && selectedDay !== dateIndex && "text-indigo-600",
-                dateIndex === 0 && "rounded-tl-lg",
-                dateIndex === 6 && "rounded-tr-lg",
-                dateIndex === dates.length - 7 && "rounded-bl-lg",
-                dateIndex === dates.length - 1 && "rounded-br-lg"
+                isCurrentMonth(date) && "text-gray-900",
+                isToday(date) && "text-indigo-600",
+                selectedDay === dateIndex && "text-white"
               )}
               onClick={() => handleSelectedDay(dateIndex)}
             >
@@ -98,8 +87,8 @@ const Calendar: React.FC<CalendarProps> = ({
                 dateTime={formattedDate}
                 className={clsx(
                   "mx-auto flex h-7 w-7 items-center justify-center rounded-full",
-                  selectedDay === dateIndex && isToday(date) && "bg-indigo-600",
-                  selectedDay === dateIndex && !isToday(date) && "bg-gray-900"
+                  selectedDay === dateIndex && "bg-gray-900",
+                  selectedDay === dateIndex && isToday(date) && "bg-indigo-600"
                 )}
               >
                 {formattedDate.split("-").pop()?.replace(/^0/, "")}
