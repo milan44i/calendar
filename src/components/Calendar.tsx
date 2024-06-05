@@ -134,7 +134,7 @@ const Calendar: React.FC<CalendarProps> = ({
               </time>
               <div
                 className={twMerge(
-                  "w-1 h-1 bg-red-500 absolute bottom-2 left-[47%] rounded-full hidden",
+                  "w-1 h-1 bg-red-400 absolute bottom-2 left-[47%] rounded-full hidden",
                   hasEvent && "block"
                 )}
               ></div>
