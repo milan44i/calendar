@@ -2,9 +2,9 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 
 import React, { ReactElement } from "react";
-import { Meeting } from "./EventCalendar";
 import { addMonths, format, isToday } from "date-fns";
 import { getLocale, isCurrentMonth } from "./functions";
+import { Meeting } from "./types";
 
 type CalendarProps = {
   selectedDay: number;
