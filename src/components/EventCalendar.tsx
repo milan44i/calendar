@@ -10,7 +10,6 @@ import {
   EllipsisHorizontalIcon,
   MapPinIcon,
 } from "@heroicons/react/20/solid";
-import { twMerge } from "tailwind-merge";
 import {
   startOfMonth,
   endOfMonth,
@@ -24,6 +23,7 @@ import {
 import React, { ReactElement, useState } from "react";
 import Calendar from "./Calendar";
 import { getLocale } from "./functions";
+import clsx from "clsx";
 
 export type Meeting = {
   id: number;
@@ -219,7 +219,7 @@ const EventCalendar: React.FC = (): ReactElement => {
                           {({ focus }) => (
                             <a
                               href="#"
-                              className={twMerge(
+                              className={clsx(
                                 focus
                                   ? "bg-gray-100 text-gray-900"
                                   : "text-gray-700",
@@ -234,7 +234,7 @@ const EventCalendar: React.FC = (): ReactElement => {
                           {({ focus }) => (
                             <a
                               href="#"
-                              className={twMerge(
+                              className={clsx(
                                 focus
                                   ? "bg-gray-100 text-gray-900"
                                   : "text-gray-700",
