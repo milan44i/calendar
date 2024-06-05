@@ -23,7 +23,7 @@ const locale = navigator.language;
 const weekdays =
   locale === "en-US"
     ? ["M", "T", "W", "T", "F", "S", "S"]
-    : ["П", "У", "С", "Ч", "П", "С", "Н"];
+    : ["P", "U", "S", "Č", "P", "S", "N"];
 
 const months =
   locale === "en-US"
