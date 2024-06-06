@@ -14,6 +14,7 @@ type CalendarProps = {
   monthDeviation: number;
   dates: Date[];
   meetings: Meeting[];
+  year: number;
 };
 
 const locale = navigator.language;
@@ -32,6 +33,7 @@ const Calendar: React.FC<CalendarProps> = ({
   monthDeviation,
   dates,
   meetings,
+  year,
 }): ReactElement => {
   const month = format(addMonths(new Date(), monthDeviation), "LLLL", {
     locale: localeObject,
@@ -48,7 +50,7 @@ const Calendar: React.FC<CalendarProps> = ({
           <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
         </button>
         <div className="flex-auto text-sm font-semibold capitalize">
-          {month}
+          {month} {year}
         </div>
         <button
           type="button"
@@ -66,8 +68,8 @@ const Calendar: React.FC<CalendarProps> = ({
       <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200 overflow-hidden">
         {dates.map((date) => {
           const formattedDate = format(date, "yyyy-MM-dd");
-          const hasEvent = meetings.some(
-            (meeting) => meeting.datetime === date
+          const hasEvent = meetings.some((meeting) =>
+            areDatesEqual(meeting.datetime as Date, date)
           );
           return (
             <button
@@ -98,8 +100,8 @@ const Calendar: React.FC<CalendarProps> = ({
               </time>
               <div
                 className={clsx(
-                  "w-1 h-1 bg-red-400 absolute bottom-2 left-[47%] rounded-full hidden",
-                  hasEvent && "block"
+                  "w-1 h-1 bg-red-400 absolute bottom-2 left-[46%] rounded-full hidden",
+                  hasEvent && "!block"
                 )}
               />
             </button>

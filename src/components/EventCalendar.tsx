@@ -17,7 +17,6 @@ import {
   format,
   startOfWeek,
   endOfWeek,
-  isSameDay,
   getMonth,
 } from "date-fns";
 import React, { ReactElement, useState } from "react";
@@ -30,38 +29,51 @@ import { Meeting } from "./types";
 const EventCalendar: React.FC = (): ReactElement => {
   const [meetings, setMeetings] = useState(mockMeetings);
   const [monthDeviation, setMonthDeviation] = useState(0);
+  const [yearDeviation, setYearDeviation] = useState(0);
+  const [selectedDay, setSelectedDay] = useState(new Date());
 
   const currentMonth = getMonth(new Date());
   const selectedMonth = (currentMonth + monthDeviation + 12) % 12; // 0-11
+  const currentYear = new Date().getFullYear();
+  const selectedYear = currentYear + yearDeviation;
 
-  const start = startOfWeek(startOfMonth(new Date(2024, selectedMonth, 1)), {
-    weekStartsOn: 1,
-  });
-  const end = endOfWeek(endOfMonth(new Date(2024, selectedMonth, 1)), {
-    weekStartsOn: 1,
-  });
-
+  const start = startOfWeek(
+    startOfMonth(new Date(currentYear + yearDeviation, selectedMonth, 1)),
+    {
+      weekStartsOn: 1,
+    }
+  );
+  const end = endOfWeek(
+    endOfMonth(new Date(currentYear + yearDeviation, selectedMonth, 1)),
+    {
+      weekStartsOn: 1,
+    }
+  );
   const dates = eachDayOfInterval({
     start,
     end,
   });
-
-  // const firstDayIndex = dates.findIndex((date) =>
-  //   isSameDay(date, startOfMonth(new Date()))
-  // );
-
-  const [selectedDay, setSelectedDay] = useState(new Date());
 
   const handleSelectedDay = (date: Date) => {
     setSelectedDay(date);
   };
 
   const handlePrevMonth = () => {
-    setMonthDeviation((prev) => prev - 1);
+    setMonthDeviation((prevMonth) => {
+      if (selectedMonth === 0) {
+        setYearDeviation((prevYear) => prevYear - 1);
+      }
+      return prevMonth - 1;
+    });
   };
 
   const handleNextMonth = () => {
-    setMonthDeviation((prev) => prev + 1);
+    setMonthDeviation((prevMonth) => {
+      if (selectedMonth === 11) {
+        setYearDeviation((prevYear) => prevYear + 1);
+      }
+      return prevMonth + 1;
+    });
   };
 
   const handleAddEvent = (meeting: Meeting) => {
@@ -83,6 +95,7 @@ const EventCalendar: React.FC = (): ReactElement => {
             monthDeviation={monthDeviation}
             dates={dates}
             meetings={meetings}
+            year={selectedYear}
           />
           <button
             type="button"
