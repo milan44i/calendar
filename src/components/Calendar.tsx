@@ -2,8 +2,8 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 
 import React, { ReactElement } from "react";
-import { addMonths, format, isToday } from "date-fns";
-import { areDatesEqual, getLocale, isCurrentMonth } from "./functions";
+import { addMonths, format, isSameDay, isThisMonth, isToday } from "date-fns";
+import { getLocale } from "./functions";
 import { Meeting } from "./types";
 
 type CalendarProps = {
@@ -69,7 +69,7 @@ const Calendar: React.FC<CalendarProps> = ({
         {dates.map((date) => {
           const formattedDate = format(date, "yyyy-MM-dd");
           const hasEvent = meetings.some((meeting) =>
-            areDatesEqual(meeting.datetime as Date, date)
+            isSameDay(meeting.datetime as Date, date)
           );
           return (
             <button
@@ -77,12 +77,12 @@ const Calendar: React.FC<CalendarProps> = ({
               type="button"
               className={clsx(
                 "py-1.5 relative hover:bg-gray-100 focus:z-10 text-gray-400",
-                isCurrentMonth(date) ? "bg-white" : "bg-gray-50",
-                (areDatesEqual(selectedDay, date) || isToday(date)) &&
+                isThisMonth(date) ? "bg-white" : "bg-gray-50",
+                (isSameDay(selectedDay, date) || isToday(date)) &&
                   "font-semibold",
-                isCurrentMonth(date) && "text-gray-900",
+                isThisMonth(date) && "text-gray-900",
                 isToday(date) && "text-indigo-600",
-                areDatesEqual(selectedDay, date) && "text-white"
+                isSameDay(selectedDay, date) && "text-white"
               )}
               onClick={() => handleSelectedDay(date)}
             >
@@ -90,8 +90,8 @@ const Calendar: React.FC<CalendarProps> = ({
                 dateTime={formattedDate}
                 className={clsx(
                   "mx-auto flex h-7 w-7 items-center justify-center rounded-full",
-                  areDatesEqual(selectedDay, date) && "bg-gray-900",
-                  areDatesEqual(selectedDay, date) &&
+                  isSameDay(selectedDay, date) && "bg-gray-900",
+                  isSameDay(selectedDay, date) &&
                     isToday(date) &&
                     "bg-indigo-600"
                 )}
