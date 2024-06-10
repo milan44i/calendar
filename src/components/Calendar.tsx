@@ -1,20 +1,26 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 
-import React, { ReactElement } from "react";
-import { addMonths, format, isSameDay, isThisMonth, isToday } from "date-fns";
+import React, { ReactElement, useState } from "react";
+import {
+  addMonths,
+  eachDayOfInterval,
+  endOfMonth,
+  endOfWeek,
+  format,
+  isSameDay,
+  isThisMonth,
+  isToday,
+  startOfMonth,
+  startOfWeek,
+} from "date-fns";
 import { getLocale } from "./functions";
 import { Event } from "./types";
 
 interface CalendarProps {
   selectedDay: Date;
   handleSelectedDay: (date: Date) => void;
-  handlePrevMonth: () => void;
-  handleNextMonth: () => void;
-  monthDeviation: number;
-  dates: Date[];
   events: Event[];
-  year: number;
 }
 
 const locale = navigator.language;
@@ -24,21 +30,42 @@ const weekdays = Array.from({ length: 7 }, (_, i) =>
   format(new Date(1970, 0, i + 5), "EEEEE", { locale: localeObject })
 );
 
-console.log(weekdays);
-
 const Calendar: React.FC<CalendarProps> = ({
   selectedDay,
   handleSelectedDay,
-  handlePrevMonth,
-  handleNextMonth,
-  monthDeviation,
-  dates,
   events,
-  year,
 }): ReactElement => {
-  const month = format(addMonths(new Date(), monthDeviation), "LLLL", {
+  const [monthDeviation, setMonthDeviation] = useState(0);
+
+  const selectedMonthYear = addMonths(new Date(), monthDeviation);
+  const monthName = format(addMonths(new Date(), monthDeviation), "LLLL", {
     locale: localeObject,
   });
+  const monthNumber = selectedMonthYear.getMonth(); // 0-11
+  const year = format(addMonths(new Date(), monthDeviation), "yyyy");
+
+  const start = startOfWeek(startOfMonth(new Date(+year, monthNumber, 1)), {
+    weekStartsOn: 1,
+  });
+  const end = endOfWeek(endOfMonth(new Date(+year, monthNumber, 1)), {
+    weekStartsOn: 1,
+  });
+  const dates = eachDayOfInterval({
+    start,
+    end,
+  });
+
+  const handlePrevMonth = () => {
+    setMonthDeviation((prevMonth) => {
+      return prevMonth - 1;
+    });
+  };
+
+  const handleNextMonth = () => {
+    setMonthDeviation((prevMonth) => {
+      return prevMonth + 1;
+    });
+  };
 
   return (
     <>
@@ -51,7 +78,7 @@ const Calendar: React.FC<CalendarProps> = ({
           <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
         </button>
         <div className="flex-auto text-sm font-semibold capitalize">
-          {month} {year}
+          {monthName} {year}
         </div>
         <button
           type="button"

@@ -10,15 +10,7 @@ import {
   EllipsisHorizontalIcon,
   MapPinIcon,
 } from "@heroicons/react/20/solid";
-import {
-  startOfMonth,
-  endOfMonth,
-  eachDayOfInterval,
-  format,
-  startOfWeek,
-  endOfWeek,
-  getMonth,
-} from "date-fns";
+import { format } from "date-fns";
 import React, { ReactElement, useState } from "react";
 import Calendar from "./Calendar";
 import { makeEvent } from "./functions";
@@ -28,52 +20,10 @@ import { Event } from "./types";
 
 const EventCalendar: React.FC = (): ReactElement => {
   const [events, setEvents] = useState(mockEvents);
-  const [monthDeviation, setMonthDeviation] = useState(0);
-  const [yearDeviation, setYearDeviation] = useState(0);
   const [selectedDay, setSelectedDay] = useState(new Date());
-
-  const currentMonth = getMonth(new Date());
-  const selectedMonth = (currentMonth + monthDeviation + 12) % 12; // 0-11
-  const currentYear = new Date().getFullYear();
-  const selectedYear = currentYear + yearDeviation;
-
-  const start = startOfWeek(
-    startOfMonth(new Date(currentYear + yearDeviation, selectedMonth, 1)),
-    {
-      weekStartsOn: 1,
-    }
-  );
-  const end = endOfWeek(
-    endOfMonth(new Date(currentYear + yearDeviation, selectedMonth, 1)),
-    {
-      weekStartsOn: 1,
-    }
-  );
-  const dates = eachDayOfInterval({
-    start,
-    end,
-  });
 
   const handleSelectedDay = (date: Date) => {
     setSelectedDay(date);
-  };
-
-  const handlePrevMonth = () => {
-    setMonthDeviation((prevMonth) => {
-      if (selectedMonth === 0) {
-        setYearDeviation((prevYear) => prevYear - 1);
-      }
-      return prevMonth - 1;
-    });
-  };
-
-  const handleNextMonth = () => {
-    setMonthDeviation((prevMonth) => {
-      if (selectedMonth === 11) {
-        setYearDeviation((prevYear) => prevYear + 1);
-      }
-      return prevMonth + 1;
-    });
   };
 
   const handleAddEvent = (event: Event) => {
@@ -90,12 +40,7 @@ const EventCalendar: React.FC = (): ReactElement => {
           <Calendar
             selectedDay={selectedDay}
             handleSelectedDay={handleSelectedDay}
-            handlePrevMonth={handlePrevMonth}
-            handleNextMonth={handleNextMonth}
-            monthDeviation={monthDeviation}
-            dates={dates}
             events={events}
-            year={selectedYear}
           />
           <button
             type="button"
