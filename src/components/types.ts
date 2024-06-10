@@ -1,4 +1,4 @@
-export type Meeting = {
+export type Event = {
   id: number;
   date: string;
   time: string;

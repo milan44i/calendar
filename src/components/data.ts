@@ -1,6 +1,6 @@
-import { Meeting } from "./types";
+import { Event } from "./types";
 
-export const mockMeetings: Meeting[] = [
+export const mockEvents: Event[] = [
   {
     id: 1,
     date: "January 10th, 2022",

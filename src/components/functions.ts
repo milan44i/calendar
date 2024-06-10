@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { enUS, srLatn } from "date-fns/locale";
-import { Meeting } from "./types";
+import { Event } from "./types";
 
 export const getLocale = (locale: string) => {
   switch (locale) {
@@ -13,7 +13,7 @@ export const getLocale = (locale: string) => {
   }
 };
 
-export const makeEvent = (selectedDay: Date): Meeting => {
+export const makeEvent = (selectedDay: Date): Event => {
   const time = navigator.language === "sr" ? "17:00" : "5:00 PM";
   return {
     id: 0,

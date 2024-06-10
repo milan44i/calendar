@@ -4,26 +4,27 @@ import clsx from "clsx";
 import React, { ReactElement } from "react";
 import { addMonths, format, isSameDay, isThisMonth, isToday } from "date-fns";
 import { getLocale } from "./functions";
-import { Meeting } from "./types";
+import { Event } from "./types";
 
-type CalendarProps = {
+interface CalendarProps {
   selectedDay: Date;
   handleSelectedDay: (date: Date) => void;
   handlePrevMonth: () => void;
   handleNextMonth: () => void;
   monthDeviation: number;
   dates: Date[];
-  meetings: Meeting[];
+  events: Event[];
   year: number;
-};
+}
 
 const locale = navigator.language;
 const localeObject = getLocale(locale);
 
-const weekdays =
-  locale === "en-US"
-    ? ["M", "T", "W", "T", "F", "S", "S"]
-    : ["P", "U", "S", "Č", "P", "S", "N"];
+const weekdays = Array.from({ length: 7 }, (_, i) =>
+  format(new Date(1970, 0, i + 5), "EEEEE", { locale: localeObject })
+);
+
+console.log(weekdays);
 
 const Calendar: React.FC<CalendarProps> = ({
   selectedDay,
@@ -32,7 +33,7 @@ const Calendar: React.FC<CalendarProps> = ({
   handleNextMonth,
   monthDeviation,
   dates,
-  meetings,
+  events,
   year,
 }): ReactElement => {
   const month = format(addMonths(new Date(), monthDeviation), "LLLL", {
@@ -68,8 +69,8 @@ const Calendar: React.FC<CalendarProps> = ({
       <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200 overflow-hidden">
         {dates.map((date) => {
           const formattedDate = format(date, "yyyy-MM-dd");
-          const hasEvent = meetings.some((meeting) =>
-            isSameDay(meeting.datetime as Date, date)
+          const hasEvent = events.some((event) =>
+            isSameDay(event.datetime as Date, date)
           );
           return (
             <button

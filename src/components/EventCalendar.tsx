@@ -23,11 +23,11 @@ import React, { ReactElement, useState } from "react";
 import Calendar from "./Calendar";
 import { makeEvent } from "./functions";
 import clsx from "clsx";
-import { mockMeetings } from "./data";
-import { Meeting } from "./types";
+import { mockEvents } from "./data";
+import { Event } from "./types";
 
 const EventCalendar: React.FC = (): ReactElement => {
-  const [meetings, setMeetings] = useState(mockMeetings);
+  const [events, setEvents] = useState(mockEvents);
   const [monthDeviation, setMonthDeviation] = useState(0);
   const [yearDeviation, setYearDeviation] = useState(0);
   const [selectedDay, setSelectedDay] = useState(new Date());
@@ -76,14 +76,14 @@ const EventCalendar: React.FC = (): ReactElement => {
     });
   };
 
-  const handleAddEvent = (meeting: Meeting) => {
-    setMeetings((prev) => [...prev, { ...meeting, id: prev.length + 1 }]);
+  const handleAddEvent = (event: Event) => {
+    setEvents((prev) => [...prev, { ...event, id: prev.length + 1 }]);
   };
 
   return (
     <div className="m-28 px-20 py-6 border-neutral-200 border rounded-lg">
       <h2 className="text-base font-semibold leading-6 text-gray-900">
-        Upcoming meetings
+        Upcoming events
       </h2>
       <div className="lg:grid lg:grid-cols-12 lg:gap-x-16">
         <div className="mt-10 text-center lg:col-start-8 lg:col-end-13 lg:row-start-1 lg:mt-9 xl:col-start-9">
@@ -94,7 +94,7 @@ const EventCalendar: React.FC = (): ReactElement => {
             handleNextMonth={handleNextMonth}
             monthDeviation={monthDeviation}
             dates={dates}
-            meetings={meetings}
+            events={events}
             year={selectedYear}
           />
           <button
@@ -105,21 +105,21 @@ const EventCalendar: React.FC = (): ReactElement => {
             Add event
           </button>
         </div>
-        {meetings.length > 0 ? (
+        {events.length > 0 ? (
           <ol className="mt-4 divide-y divide-gray-100 text-sm leading-6 lg:col-span-7 xl:col-span-8">
-            {meetings.map((meeting) => (
+            {events.map((event) => (
               <li
-                key={meeting.id}
+                key={event.id}
                 className="relative flex space-x-6 py-6 xl:static"
               >
                 <img
-                  src={meeting.imageUrl}
+                  src={event.imageUrl}
                   alt=""
                   className="h-14 w-14 flex-none rounded-full"
                 />
                 <div className="flex-auto">
                   <h3 className="pr-10 font-semibold text-gray-900 xl:pr-0">
-                    {meeting.name}
+                    {event.name}
                   </h3>
                   <dl className="mt-2 flex flex-col text-gray-500 xl:flex-row">
                     <div className="flex items-start space-x-3">
@@ -133,11 +133,11 @@ const EventCalendar: React.FC = (): ReactElement => {
                       <dd>
                         <time
                           dateTime={format(
-                            meeting.datetime,
+                            event.datetime,
                             "yyyy-MM-dd'T'HH:mm"
                           )}
                         >
-                          {meeting.date} at {meeting.time}
+                          {event.date} at {event.time}
                         </time>
                       </dd>
                     </div>
@@ -149,7 +149,7 @@ const EventCalendar: React.FC = (): ReactElement => {
                           aria-hidden="true"
                         />
                       </dt>
-                      <dd>{meeting.location}</dd>
+                      <dd>{event.location}</dd>
                     </div>
                   </dl>
                 </div>
