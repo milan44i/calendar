@@ -1,9 +1,11 @@
 import React, { ReactElement, useState } from "react";
 import Calendar from "./Calendar";
-import { makeEvent } from "./functions";
+import { makeEvent, setCurrentLocaleAsDefault } from "./functions";
 import { mockEvents } from "./data";
 import { Event } from "./types";
 import Events from "./Events";
+
+setCurrentLocaleAsDefault();
 
 const EventCalendar: React.FC = (): ReactElement => {
   const [events, setEvents] = useState(mockEvents);

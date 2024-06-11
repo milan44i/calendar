@@ -14,8 +14,8 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns";
-import { getLocale } from "./functions";
 import { Event } from "./types";
+import { setCurrentLocaleAsDefault } from "./functions";
 
 interface CalendarProps {
   selectedDay: Date;
@@ -23,11 +23,10 @@ interface CalendarProps {
   events?: Event[];
 }
 
-const locale = navigator.language;
-const localeObject = getLocale(locale);
+setCurrentLocaleAsDefault();
 
 const weekdays = Array.from({ length: 7 }, (_, i) =>
-  format(new Date(1970, 0, i + 5), "EEEEE", { locale: localeObject })
+  format(new Date(1970, 0, i + 5), "EEEEE")
 );
 
 const Calendar: React.FC<CalendarProps> = ({
@@ -38,9 +37,7 @@ const Calendar: React.FC<CalendarProps> = ({
   const [monthDeviation, setMonthDeviation] = useState(0);
 
   const selectedMonthYear = addMonths(new Date(), monthDeviation);
-  const monthName = format(addMonths(new Date(), monthDeviation), "LLLL", {
-    locale: localeObject,
-  });
+  const monthName = format(addMonths(new Date(), monthDeviation), "LLLL");
   const monthNumber = selectedMonthYear.getMonth(); // 0-11
   const year = format(addMonths(new Date(), monthDeviation), "yyyy");
 
