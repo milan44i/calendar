@@ -1,8 +1,6 @@
 export type Event = {
   id: number;
-  date: string;
-  time: string;
-  datetime: string | Date; // will be Date only
+  date: Date;
   name: string;
   imageUrl: string;
   location: string;

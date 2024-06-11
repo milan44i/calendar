@@ -27,7 +27,7 @@ interface CalendarProps {
 setCurrentLocaleAsDefault();
 
 const weekdays = Array.from({ length: 7 }, (_, i) =>
-  format(new Date(1970, 0, i + 5), "EEEEE")
+  format(new Date(1970, 0, i + 5), "eeeee")
 );
 
 const Calendar: React.FC<CalendarProps> = ({
@@ -92,9 +92,7 @@ const Calendar: React.FC<CalendarProps> = ({
       </div>
       <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200 overflow-hidden">
         {dates.map((date) => {
-          const hasEvent = events.some((event) =>
-            isSameDay(event.datetime as Date, date)
-          );
+          const hasEvent = events.some((event) => isSameDay(event.date, date));
           const isCurrentMonth = isThisMonth(date);
           const currentDaySelected = isSameDay(selectedDay, date);
           const today = isToday(date);

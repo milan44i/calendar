@@ -20,12 +20,9 @@ export const setCurrentLocaleAsDefault = (): void => {
 };
 
 export const makeEvent = (selectedDay: Date): Event => {
-  const time = navigator.language === "sr" ? "17:00" : "5:00 PM";
   return {
     id: 0, // will be changed in handleAddEvent
-    date: format(selectedDay, "do MMMM yyyy."),
-    time,
-    datetime: format(selectedDay, "yyyy-MM-dd") + "T17:00",
+    date: selectedDay,
     name: "Leslie Alexander",
     imageUrl:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
