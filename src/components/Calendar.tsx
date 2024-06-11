@@ -1,5 +1,4 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-import clsx from "clsx";
 
 import React, { ReactElement, useState } from "react";
 import {
@@ -17,6 +16,7 @@ import {
 } from "date-fns";
 import { Event } from "./types";
 import { setCurrentLocaleAsDefault } from "./functions";
+import { twMerge } from "tailwind-merge";
 
 interface CalendarProps {
   selectedDay: Date;
@@ -103,7 +103,7 @@ const Calendar: React.FC<CalendarProps> = ({
             <button
               key={date.toISOString()}
               type="button"
-              className={clsx(
+              className={twMerge(
                 "py-1.5 relative hover:bg-gray-100 focus:z-10 text-gray-400",
                 isCurrentMonth ? "bg-white" : "bg-gray-50",
                 (currentDaySelected || today) && "font-semibold",
@@ -115,7 +115,7 @@ const Calendar: React.FC<CalendarProps> = ({
             >
               <time
                 dateTime={date.toString()}
-                className={clsx(
+                className={twMerge(
                   "mx-auto flex h-7 w-7 items-center justify-center rounded-full",
                   currentDaySelected && "bg-gray-900",
                   currentDaySelected && today && "bg-indigo-600"
@@ -124,7 +124,7 @@ const Calendar: React.FC<CalendarProps> = ({
                 {getDate(date)}
               </time>
               <div
-                className={clsx(
+                className={twMerge(
                   "w-1 h-1 bg-red-400 absolute bottom-2 left-[46%] rounded-full hidden",
                   hasEvent && "!block"
                 )}

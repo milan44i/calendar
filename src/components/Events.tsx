@@ -12,8 +12,8 @@ import {
 } from "@heroicons/react/20/solid";
 import { format } from "date-fns";
 import React, { ReactElement } from "react";
-import clsx from "clsx";
 import { Event } from "./types";
+import { twMerge } from "tailwind-merge";
 
 interface EventsProps {
   events: Event[];
@@ -88,7 +88,7 @@ const Events: React.FC<EventsProps> = ({ events }): ReactElement => {
                     {({ focus }) => (
                       <a
                         href="#"
-                        className={clsx(
+                        className={twMerge(
                           focus ? "bg-gray-100 text-gray-900" : "text-gray-700",
                           "block px-4 py-2 text-sm"
                         )}
@@ -101,7 +101,7 @@ const Events: React.FC<EventsProps> = ({ events }): ReactElement => {
                     {({ focus }) => (
                       <a
                         href="#"
-                        className={clsx(
+                        className={twMerge(
                           focus ? "bg-gray-100 text-gray-900" : "text-gray-700",
                           "block px-4 py-2 text-sm"
                         )}
