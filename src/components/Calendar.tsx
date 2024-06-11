@@ -1,71 +1,68 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
+
+import React, { ReactElement, useState } from "react";
+import {
+  addMonths,
+  eachDayOfInterval,
+  endOfMonth,
+  endOfWeek,
+  format,
+  getDate,
+  isSameDay,
+  isThisMonth,
+  isToday,
+  startOfMonth,
+  startOfWeek,
+} from "date-fns";
+import { Event } from "./types";
+import { setCurrentLocaleAsDefault } from "./functions";
 import { twMerge } from "tailwind-merge";
 
-import React, { ReactElement } from "react";
-import { Meeting } from "./EventCalendar";
+interface CalendarProps {
+  selectedDay: Date;
+  handleSelectedDay: (date: Date) => void;
+  events?: Event[];
+}
 
-type CalendarProps = {
-  selectedDay: number;
-  handleSelectedDay: (idx: number) => void;
-  selectedMonth: number;
-  handlePrevMonth: () => void;
-  handleNextMonth: () => void;
-  dates: {
-    date: string;
-    isCurrentMonth: boolean;
-    isToday: boolean;
-  }[];
-  meetings: Meeting[];
-};
+setCurrentLocaleAsDefault();
 
-const locale = navigator.language;
-
-const weekdays =
-  locale === "en-US"
-    ? ["M", "T", "W", "T", "F", "S", "S"]
-    : ["П", "У", "С", "Ч", "П", "С", "Н"];
-
-const months =
-  locale === "en-US"
-    ? [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ]
-    : [
-        "Јануар",
-        "Фебруар",
-        "Март",
-        "Април",
-        "Мај",
-        "Јун",
-        "Јул",
-        "Август",
-        "Септембар",
-        "Октобар",
-        "Новембар",
-        "Децембар",
-      ];
+const weekdays = Array.from({ length: 7 }, (_, i) =>
+  format(new Date(1970, 0, i + 5), "eeeee")
+);
 
 const Calendar: React.FC<CalendarProps> = ({
   selectedDay,
   handleSelectedDay,
-  selectedMonth,
-  handlePrevMonth,
-  handleNextMonth,
-  dates,
-  meetings,
+  events = [],
 }): ReactElement => {
-  const month = months[selectedMonth - 1];
+  const [monthDeviation, setMonthDeviation] = useState(0);
+
+  const selectedMonthYear = addMonths(new Date(), monthDeviation);
+  const monthName = format(addMonths(new Date(), monthDeviation), "LLLL");
+  const year = format(addMonths(new Date(), monthDeviation), "yyyy");
+
+  const start = startOfWeek(startOfMonth(selectedMonthYear), {
+    weekStartsOn: 1,
+  });
+  const end = endOfWeek(endOfMonth(selectedMonthYear), {
+    weekStartsOn: 1,
+  });
+  const dates = eachDayOfInterval({
+    start,
+    end,
+  });
+
+  const handlePrevMonth = () => {
+    setMonthDeviation((prevMonth) => {
+      return prevMonth - 1;
+    });
+  };
+
+  const handleNextMonth = () => {
+    setMonthDeviation((prevMonth) => {
+      return prevMonth + 1;
+    });
+  };
 
   return (
     <>
@@ -77,7 +74,9 @@ const Calendar: React.FC<CalendarProps> = ({
         >
           <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
         </button>
-        <div className="flex-auto text-sm font-semibold">{month}</div>
+        <div className="flex-auto text-sm font-semibold capitalize">
+          {monthName} {year}
+        </div>
         <button
           type="button"
           className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
@@ -91,53 +90,43 @@ const Calendar: React.FC<CalendarProps> = ({
           <div key={index}>{day}</div>
         ))}
       </div>
-      <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200">
-        {dates.map((date, dateIdx) => {
-          console.log(meetings[0].datetime.slice(0, 10), date.date);
-          const hasEvent = meetings.some(
-            (meeting) => meeting.datetime.slice(0, 10) === date.date
-          );
+      <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200 overflow-hidden">
+        {dates.map((date) => {
+          const hasEvent = events.some((event) => isSameDay(event.date, date));
+          const isCurrentMonth = isThisMonth(date);
+          const currentDaySelected = isSameDay(selectedDay, date);
+          const today = isToday(date);
+
           return (
             <button
-              key={date.date}
+              key={date.toISOString()}
               type="button"
               className={twMerge(
-                "py-1.5 relative hover:bg-gray-100 focus:z-10",
-                date.isCurrentMonth ? "bg-white" : "bg-gray-50",
-                (selectedDay === dateIdx || date.isToday) && "font-semibold",
-                selectedDay === dateIdx && "text-white",
-                selectedDay !== dateIdx &&
-                  date.isCurrentMonth &&
-                  !date.isToday &&
-                  "text-gray-900",
-                selectedDay !== dateIdx &&
-                  !date.isCurrentMonth &&
-                  !date.isToday &&
-                  "text-gray-400",
-                date.isToday && selectedDay !== dateIdx && "text-indigo-600",
-                dateIdx === 0 && "rounded-tl-lg",
-                dateIdx === 6 && "rounded-tr-lg",
-                dateIdx === dates.length - 7 && "rounded-bl-lg",
-                dateIdx === dates.length - 1 && "rounded-br-lg"
+                "py-1.5 relative hover:bg-gray-100 focus:z-10 text-gray-400",
+                isCurrentMonth ? "bg-white" : "bg-gray-50",
+                (currentDaySelected || today) && "font-semibold",
+                isCurrentMonth && "text-gray-900",
+                today && "text-indigo-600",
+                currentDaySelected && "text-white"
               )}
-              onClick={() => handleSelectedDay(dateIdx)}
+              onClick={() => handleSelectedDay(date)}
             >
               <time
-                dateTime={date.date}
+                dateTime={date.toString()}
                 className={twMerge(
                   "mx-auto flex h-7 w-7 items-center justify-center rounded-full",
-                  selectedDay === dateIdx && date.isToday && "bg-indigo-600",
-                  selectedDay === dateIdx && !date.isToday && "bg-gray-900"
+                  currentDaySelected && "bg-gray-900",
+                  currentDaySelected && today && "bg-indigo-600"
                 )}
               >
-                {date.date.split("-").pop()?.replace(/^0/, "")}
+                {getDate(date)}
               </time>
               <div
                 className={twMerge(
-                  "w-1 h-1 bg-red-400 absolute bottom-2 left-[47%] rounded-full hidden",
-                  hasEvent && "block"
+                  "w-1 h-1 bg-red-400 absolute bottom-2 left-[46%] rounded-full hidden",
+                  hasEvent && "!block"
                 )}
-              ></div>
+              />
             </button>
           );
         })}
