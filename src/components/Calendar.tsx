@@ -20,7 +20,7 @@ import { Event } from "./types";
 interface CalendarProps {
   selectedDay: Date;
   handleSelectedDay: (date: Date) => void;
-  events: Event[];
+  events?: Event[];
 }
 
 const locale = navigator.language;
@@ -33,7 +33,7 @@ const weekdays = Array.from({ length: 7 }, (_, i) =>
 const Calendar: React.FC<CalendarProps> = ({
   selectedDay,
   handleSelectedDay,
-  events,
+  events = [],
 }): ReactElement => {
   const [monthDeviation, setMonthDeviation] = useState(0);
 
