@@ -8,6 +8,7 @@ import {
   endOfMonth,
   endOfWeek,
   format,
+  getDate,
   isSameDay,
   isThisMonth,
   isToday,
@@ -38,13 +39,12 @@ const Calendar: React.FC<CalendarProps> = ({
 
   const selectedMonthYear = addMonths(new Date(), monthDeviation);
   const monthName = format(addMonths(new Date(), monthDeviation), "LLLL");
-  const monthNumber = selectedMonthYear.getMonth(); // 0-11
   const year = format(addMonths(new Date(), monthDeviation), "yyyy");
 
-  const start = startOfWeek(startOfMonth(new Date(+year, monthNumber, 1)), {
+  const start = startOfWeek(startOfMonth(selectedMonthYear), {
     weekStartsOn: 1,
   });
-  const end = endOfWeek(endOfMonth(new Date(+year, monthNumber, 1)), {
+  const end = endOfWeek(endOfMonth(selectedMonthYear), {
     weekStartsOn: 1,
   });
   const dates = eachDayOfInterval({
@@ -92,36 +92,36 @@ const Calendar: React.FC<CalendarProps> = ({
       </div>
       <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200 overflow-hidden">
         {dates.map((date) => {
-          const formattedDate = format(date, "yyyy-MM-dd");
           const hasEvent = events.some((event) =>
             isSameDay(event.datetime as Date, date)
           );
+          const isCurrentMonth = isThisMonth(date);
+          const currentDaySelected = isSameDay(selectedDay, date);
+          const today = isToday(date);
+
           return (
             <button
               key={date.toISOString()}
               type="button"
               className={clsx(
                 "py-1.5 relative hover:bg-gray-100 focus:z-10 text-gray-400",
-                isThisMonth(date) ? "bg-white" : "bg-gray-50",
-                (isSameDay(selectedDay, date) || isToday(date)) &&
-                  "font-semibold",
-                isThisMonth(date) && "text-gray-900",
-                isToday(date) && "text-indigo-600",
-                isSameDay(selectedDay, date) && "text-white"
+                isCurrentMonth ? "bg-white" : "bg-gray-50",
+                (currentDaySelected || today) && "font-semibold",
+                isCurrentMonth && "text-gray-900",
+                today && "text-indigo-600",
+                currentDaySelected && "text-white"
               )}
               onClick={() => handleSelectedDay(date)}
             >
               <time
-                dateTime={formattedDate}
+                dateTime={date.toString()}
                 className={clsx(
                   "mx-auto flex h-7 w-7 items-center justify-center rounded-full",
-                  isSameDay(selectedDay, date) && "bg-gray-900",
-                  isSameDay(selectedDay, date) &&
-                    isToday(date) &&
-                    "bg-indigo-600"
+                  currentDaySelected && "bg-gray-900",
+                  currentDaySelected && today && "bg-indigo-600"
                 )}
               >
-                {formattedDate.split("-").pop()?.replace(/^0/, "")}
+                {getDate(date)}
               </time>
               <div
                 className={clsx(
